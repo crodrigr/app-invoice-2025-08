@@ -1,1 +1,36 @@
-<p>login works!</p>
+<div class="container mt-5">
+  <div class="row justify-content-center">
+    <div class="card border-primary text-center col-md-6 col-lg-5">
+      <div class="card-header">
+        {{ titulo }}
+      </div>
+      <div class="card-body">
+
+        <form (ngSubmit)="login()" #form="ngForm" novalidate>
+
+          <div class="form-group mb-3 text-start">
+            <label for="username" class="form-label">Username</label>
+            <input [(ngModel)]="usuario.username" name="username" id="username"
+              class="form-control" placeholder="Username" required autofocus>
+            <div *ngIf="form.submitted && !usuario.username" class="text-danger">
+              El usuario es obligatorio.
+            </div>
+          </div>
+
+          <div class="form-group mb-3 text-start">
+            <label for="password" class="form-label">Password</label>
+            <input [(ngModel)]="usuario.password" name="password" id="password"
+              class="form-control" type="password" placeholder="Password" required>
+            <div *ngIf="form.submitted && !usuario.password" class="text-danger">
+              La contraseña es obligatoria.
+            </div>
+          </div>
+
+          <button type="submit" class="btn btn-primary btn-block w-100">Login</button>
+
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
