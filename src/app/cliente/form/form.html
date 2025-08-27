@@ -1,0 +1,101 @@
+<!-- Mensajes de error -->
+<ul class="alert alert-danger mt-4 w-75 mx-auto" *ngIf="errores.length > 0">
+  <li *ngFor="let err of errores">{{ err }}</li>
+</ul>
+
+<!-- Tarjeta principal del formulario -->
+<div class="card shadow border-0 mx-auto mt-5" style="max-width: 700px;">
+  <div class="card-header bg-primary text-white">
+    <h5 class="mb-0">🧾 {{ titulo }}</h5>
+  </div>
+
+  <div class="card-body bg-light">
+    <form #clienteForm="ngForm" class="needs-validation" novalidate>
+
+      <!-- Nombre -->
+      <div class="mb-3">
+        <label for="nombre" class="form-label fw-semibold">Nombre</label>
+        <input
+          type="text"
+          id="nombre"
+          name="nombre"
+          class="form-control"
+          required
+          [(ngModel)]="cliente.nombre"
+        />
+      </div>
+
+      <!-- Apellido -->
+      <div class="mb-3">
+        <label for="apellido" class="form-label fw-semibold">Apellido</label>
+        <input
+          type="text"
+          id="apellido"
+          name="apellido"
+          class="form-control"
+          required
+          [(ngModel)]="cliente.apellido"
+        />
+      </div>
+
+      <!-- Email -->
+      <div class="mb-3">
+        <label for="email" class="form-label fw-semibold">Email</label>
+        <input
+          type="email"
+          id="email"
+          name="email"
+          class="form-control"
+          required
+          [(ngModel)]="cliente.email"
+        />
+      </div>
+
+      <!-- Fecha -->
+      <div class="mb-3">
+        <label for="createAt" class="form-label fw-semibold">Fecha</label>
+        <div class="d-flex align-items-center gap-2">
+          <input
+            [matDatepicker]="miDatepicker"
+            class="form-control"
+            id="createAt"
+            name="createAt"
+            required
+            [(ngModel)]="cliente.createAt"
+          />
+          <mat-datepicker-toggle matSuffix [for]="miDatepicker"></mat-datepicker-toggle>
+          <mat-datepicker #miDatepicker></mat-datepicker>
+        </div>
+      </div>
+
+      <!-- Región -->
+      <div class="mb-4">
+        <label for="region" class="form-label fw-semibold">Región</label>
+        <select
+          id="region"
+          name="region"
+          class="form-select"
+          required
+          [(ngModel)]="cliente.region"
+          [compareWith]="compararRegion">
+          <option [ngValue]="undefined">--- Seleccionar una región ---</option>
+          <option *ngFor="let region of regiones" [ngValue]="region">
+            {{ region.nombre }}
+          </option>
+        </select>
+      </div>
+
+      <!-- Botones -->
+      <div class="d-flex justify-content-center gap-3">
+        <button
+          type="submit"
+          class="btn btn-success px-4"
+          [disabled]="!clienteForm.form.valid"
+          (click)="create()">
+          Crear
+        </button>
+        <a class="btn btn-outline-secondary px-4" [routerLink]="['/clientes']">Cancelar</a>
+      </div>
+    </form>
+  </div>
+</div>
