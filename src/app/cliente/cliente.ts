@@ -4,10 +4,12 @@ import { ClienteModel } from './cliente.model';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import swal from 'sweetalert2';
+import { ModalService } from './detalle/modal-servcie';
+import { Detalle } from './detalle/detalle';
 
 @Component({
   selector: 'app-cliente',
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule,Detalle],
   templateUrl: './cliente.html',
   styleUrl: './cliente.css'
 })
@@ -15,9 +17,12 @@ export class Cliente implements OnInit {
 
   title = 'Cliente';
   clientes: ClienteModel[] = [];
-  
+  clienteSeleccionado: ClienteModel | null = null;
 
-  constructor(private readonly clienteService: ClienteService) { }
+
+  constructor(private readonly clienteService: ClienteService,
+    private readonly modalService: ModalService
+  ) { }
 
   ngOnInit(): void {
     this.getClientes();
@@ -57,6 +62,12 @@ export class Cliente implements OnInit {
         });
       }
     });
+  }
+
+
+  abrirModal(cliente: ClienteModel) {
+    this.clienteSeleccionado = cliente;
+    this.modalService.abrirModal();
   }
 
 

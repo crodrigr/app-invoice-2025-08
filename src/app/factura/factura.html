@@ -1,0 +1,124 @@
+<form #facturaForm="ngForm" novalidate (ngSubmit)="create(facturaForm)" class="needs-validation"
+  [class.was-validated]="facturaForm.submitted">
+  <div class="card shadow-sm my-4 mx-auto" style="max-width: 850px;">
+    <div class="card-header bg-dark text-white">
+      <h5 class="mb-0">{{ titulo }}</h5>
+    </div>
+
+    <div class="card-body">
+
+      <!-- Cliente -->
+      <div class="mb-3 row" *ngIf="factura.cliente">
+        <label class="col-sm-2 col-form-label fw-bold">Cliente</label>
+        <div class="col-sm-10">
+          <input type="text" class="form-control-plaintext"
+            [value]="factura.cliente.nombre + ' ' + factura.cliente.apellido" readonly>
+        </div>
+      </div>
+
+      <!-- Descripción -->
+      <div class="mb-3 row">
+        <label for="descripcion" class="col-sm-2 col-form-label">Descripción</label>
+        <div class="col-sm-10">
+          <input type="text" class="form-control" name="descripcion" id="descripcion" required
+            [(ngModel)]="factura.descripcion" #descripcion="ngModel" [readonly]="esVisualizacion"
+            [class.is-invalid]="!esVisualizacion && descripcion.invalid && (descripcion.touched || facturaForm.submitted)">
+          <div class="invalid-feedback">La descripción es requerida.</div>
+        </div>
+      </div>
+
+      <!-- Observación -->
+      <div class="mb-3 row">
+        <label for="observacion" class="col-sm-2 col-form-label">Observación</label>
+        <div class="col-sm-10">
+          <textarea class="form-control" name="observacion" id="observacion" rows="2" [(ngModel)]="factura.observacion"
+            [readonly]="esVisualizacion"></textarea>
+          <div class="form-text">Opcional</div>
+        </div>
+      </div>
+
+      <!-- Autocompletar producto -->
+      <div class="mb-3 row" *ngIf="!esVisualizacion">
+        <label class="col-sm-2 col-form-label">Producto</label>
+        <div class="col-sm-10">
+          <mat-form-field class="w-100">
+            <input matInput placeholder="Añadir producto" [formControl]="autocompleteControl" [matAutocomplete]="auto">
+            <mat-autocomplete #auto="matAutocomplete" [displayWith]="mostrarNombre"
+              (optionSelected)="seleccionarProducto($event.option.value)">
+              <mat-option *ngFor="let producto of productosFiltrados | async" [value]="producto">
+                {{ producto.nombre }}
+              </mat-option>
+            </mat-autocomplete>
+          </mat-form-field>
+
+          <div class="alert alert-danger mt-2 py-1" *ngIf="autocompleteControl.invalid && facturaForm.submitted">
+            La factura no puede estar vacía!
+          </div>
+        </div>
+      </div>
+
+      <!-- Advertencia si no hay productos -->
+      <div *ngIf="factura.items.length === 0" class="alert alert-info text-center">
+        No hay líneas asignadas para la factura. Debe agregar al menos una.
+      </div>
+
+      <!-- Tabla de productos -->
+      <!-- Tabla de productos -->
+      <div class="table-responsive" *ngIf="factura.items.length > 0">
+        <table class="table table-bordered table-hover align-middle">
+          <thead class="table-light">
+            <tr>
+              <th>Producto</th>
+              <th class="text-end">Precio</th>
+              <th class="text-center">Cantidad</th>
+              <th class="text-end">Total</th>
+              <th *ngIf="!esVisualizacion" class="text-center">Eliminar</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let item of factura.items">
+              <td>{{ item.producto.nombre }}</td>
+              <td class="text-end">{{ item.producto.precio | currency: 'COP':'symbol' }}</td>
+              <td class="text-center">
+                <ng-container *ngIf="!esVisualizacion; else soloLectura">
+                  <input type="number" class="form-control form-control-sm w-75 mx-auto text-center"
+                    [value]="item.cantidad" min="1" (change)="actualizarCantidad(item.producto.id, $event)" />
+                </ng-container>
+                <ng-template #soloLectura>
+                  {{ item.cantidad }}
+                </ng-template>
+              </td>
+              <td class="text-end">
+                {{ (item.producto.precio * item.cantidad) | currency: 'COP':'symbol' }}
+              </td>
+              <td *ngIf="!esVisualizacion" class="text-center">
+                <button type="button" class="btn btn-sm btn-outline-danger"
+                  (click)="eliminarItemFactura(item.producto.id)">
+                  ✖
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+
+      <div *ngIf="factura.items.length > 0" class="text-end fw-bold fs-5 me-3 mt-3">
+        <span *ngIf="esVisualizacion">Gran Total: {{ getGranTotal() | currency: 'COP':'symbol' }}</span>
+        <span *ngIf="!esVisualizacion" class="text-muted">Gran Total: {{ factura.calcularGranTotal() | currency:
+          'COP':'symbol' }}</span>
+      </div>
+
+      <!-- Botones -->
+      <div class="text-end mt-4">
+        <button *ngIf="!esVisualizacion" type="submit" class="btn btn-primary me-2"
+          [disabled]="factura.items.length === 0 || facturaForm.invalid">
+          💾 Crear Factura
+        </button>
+        <button type="button" class="btn btn-secondary" [routerLink]="['/clientes']">
+          Volver
+        </button>
+      </div>
+    </div>
+  </div>
+</form>

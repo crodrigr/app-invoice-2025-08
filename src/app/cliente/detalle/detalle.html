@@ -1,0 +1,93 @@
+<div class="abrir-modal animacion fadeIn" *ngIf="modalService.modal">
+  <div class="modal d-block" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg" role="document">
+      <div class="modal-content">
+
+        <div class="modal-header">
+          <h5 class="modal-title">{{ titulo }}</h5>
+          <button type="button" class="btn-close" aria-label="Close" (click)="cerrarModal()"></button>
+        </div>
+
+        <div class="modal-body">
+          <div class="container">
+
+            <div class="row">
+              <div class="col-sm">
+                <ul *ngIf="cliente" class="list-group text-dark mb-3">
+                  <li class="list-group-item active">{{ cliente.nombre }}</li>
+                  <li class="list-group-item">{{ cliente.apellido }}</li>
+                  <li class="list-group-item">{{ cliente.email }}</li>
+                  <li class="list-group-item">{{ cliente.createAt | date: 'fullDate' }}</li>
+                  <li class="list-group-item">{{ cliente.region?.nombre }}</li>
+                </ul>
+              </div>
+            </div>
+
+            <div class="row mb-3">
+              <div class="col">
+                <button type="button" class="btn btn-success btn-sm" [routerLink]="['/facturas/form', cliente.id]">
+                  Crear factura
+                </button>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col">
+
+                <!-- Mostrar alerta si no hay facturas -->
+                <div class="alert alert-info" *ngIf="cliente?.facturas?.length === 0">
+                  No hay facturas asignadas para el cliente {{ cliente.nombre }} {{ cliente.apellido }}
+                </div>
+                <table class="table table-bordered table-striped"
+                  *ngIf="cliente?.facturas as facturas; else noFacturas">
+                  <ng-container *ngIf="facturas.length > 0; else noFacturas">
+                    <thead>
+                      <tr>
+                        <th>Folio</th>
+                        <th>Descripción</th>
+                        <th>Fecha</th>
+                        <th>Total</th>
+                        <th>Detalle</th>
+                        <th>Eliminar</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr *ngFor="let factura of facturas">
+                        <td>{{ factura.id }}</td>
+                        <td>{{ factura.descripcion }}</td>
+                        <td>{{ factura.createAt | date:'mediumDate' }}</td>
+                        <td>{{ factura.total | currency: 'COP': 'symbol' }}</td>
+                        <td>
+                          <button class="btn btn-primary btn-sm" type="button"
+                            [routerLink]="['/facturas', factura.id]">Ver</button>
+                        </td>
+                        <td>
+                          <button class="btn btn-danger btn-sm" type="button"
+                            (click)="delete(factura)">Eliminar</button>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </ng-container>
+                </table>
+
+                <ng-template #noFacturas>
+                  <div class="alert alert-info">
+                    No hay facturas asignadas para el cliente {{ cliente.nombre }} {{ cliente.apellido }}
+                  </div>
+                </ng-template>
+
+
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" (click)="cerrarModal()">Cerrar</button>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>

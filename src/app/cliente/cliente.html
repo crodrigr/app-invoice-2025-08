@@ -1,3 +1,6 @@
+<app-detalle *ngIf="clienteSeleccionado" 
+                 [cliente]="clienteSeleccionado">
+</app-detalle>
 
 
 <div class="container mt-4">
@@ -36,7 +39,7 @@
           <tbody>
             <tr *ngFor="let cliente of clientes">
               <td>
-                <button class="btn btn-info btn-sm">Ver</button>
+                <button class="btn btn-info btn-sm" (click)="abrirModal(cliente)">Ver</button>
               </td>
               <td>{{ cliente.id }}</td>
               <td>{{ cliente.nombre }}</td>
